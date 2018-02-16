@@ -1,0 +1,6 @@
+*.class
+workspace.xml
+tasks.xml
+dictionaries
+*.iws
+*.iml
