@@ -4,6 +4,23 @@ public class Person {
 
     String name;
     String firstName;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public MaritalStatus getMaritalStatus() {
+        return maritalStatus;
+    }
+
     LocalDate dateOfBirth;
     MaritalStatus maritalStatus;
 
