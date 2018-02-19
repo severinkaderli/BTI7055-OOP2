@@ -1,11 +1,11 @@
 # 1. Modulinformationen
 **Modul:** BTI7055-OOP2  
-**Dozent:** Mr. Man
+**Dozent:** Andres Scheidegger & Rolf Haenni
 
-## 1.1 Zugänge etc.
-Moodle Passwort und solche Dinge.
+## 1.1 Modulunterlagen
+Alle Unterlagen zu diesem Modul sind in auf GitHub zu finden:
 
-[Link zu Dokumenten](https://google.com)
+[https://github.com/BTI7055-ObjectOrientedProgramming/FS18-Documents](https://github.com/BTI7055-ObjectOrientedProgramming/FS18-Documents)
 
 # 2. Erstes Thema
 Ein Bisschen Test bla bli blu. ujnd snoch mehr.
