@@ -52,7 +52,7 @@ public class SceneBuilder {
 
         // Handles the event when the add person button is clicked. It opens a new window
         // with a form to enter a new person.
-        addButton.setOnAction(action -> {
+        addButton.setOnAction(event -> {
             Stage addPersonStage = new Stage();
             addPersonStage.setScene(this.buildAddPersonWindow(addPersonStage, people));
             addPersonStage.initModality(Modality.APPLICATION_MODAL);
@@ -105,15 +105,23 @@ public class SceneBuilder {
         return personTableView;
     }
 
+    /**
+     * Builds the scene for the add person window.
+     *
+     * @param stage The stage of the the window
+     * @param people The list of people
+     * @return
+     */
     private Scene buildAddPersonWindow(Stage stage, ObservableList<Person> people) {
         GridPane gridPane = this.prepareGridPane();
 
-        // Add labels
-        List<Node> labels = new ArrayList<>();
-        labels.add(new Label("Name"));
-        labels.add(new Label("First name"));
-        labels.add(new Label("Date of birth"));
-        labels.add(new Label("Marital status"));
+        // Add the labels to the grid pane
+        List<Label> labels = new ArrayList<>(Arrays.asList(
+                new Label("Name"),
+                new Label("First name"),
+                new Label("Date of birth"),
+                new Label("Marital status")
+        ));
 
         for (int i = 0; i < labels.size(); i++) {
             gridPane.add(labels.get(i), 0, i);
@@ -129,15 +137,15 @@ public class SceneBuilder {
         DatePicker dateOfBirthField = new DatePicker(LocalDate.now());
         gridPane.add(dateOfBirthField, 1, 2);
 
-        ChoiceBox martialStatusField = new ChoiceBox(FXCollections.observableArrayList(MaritalStatus.values()));
+        ChoiceBox martialStatusField = new ChoiceBox<>(FXCollections.observableArrayList(MaritalStatus.values()));
         martialStatusField.getSelectionModel().selectFirst();
 
         gridPane.add(martialStatusField, 1, 3);
         martialStatusField.setMaxWidth(Double.MAX_VALUE);
-        gridPane.setFillWidth(martialStatusField, true);
+        GridPane.setFillWidth(martialStatusField, true);
 
         Button saveButton = new Button("Save");
-        saveButton.setOnAction(action -> {
+        saveButton.setOnAction(event -> {
             // Validating
             if (nameField.getText().isEmpty()) {
                 this.showValidationAlert("The name field is empty!");
@@ -160,14 +168,16 @@ public class SceneBuilder {
         });
 
         Button cancelButton = new Button("Cancel");
-        cancelButton.setOnAction(action -> {
+
+        // Close the current window on click on the cancel button
+        cancelButton.setOnAction(event -> {
             stage.close();
         });
 
         HBox buttonBox = new HBox(saveButton, cancelButton);
-        buttonBox.setSpacing(10);
+        buttonBox.setSpacing(PADDING);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        gridPane.setHalignment(buttonBox, HPos.RIGHT);
+        GridPane.setHalignment(buttonBox, HPos.RIGHT);
         gridPane.add(buttonBox, 1, 4);
 
         BorderPane rootPane = new BorderPane();
@@ -175,6 +185,11 @@ public class SceneBuilder {
         return new Scene(rootPane, 350, 200);
     }
 
+    /**
+     * Show a validation alert window with the given description.
+     *
+     * @param description The description that will be shown
+     */
     private void showValidationAlert(String description) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Validation Error");
