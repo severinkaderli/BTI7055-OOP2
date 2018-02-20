@@ -3,6 +3,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableListBase;
+import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,60 +22,91 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class SceneBuilder {
+    /**
+     * The padding value used throughout the application.
+     */
+    private static final int PADDING = 10;
 
+    /**
+     * Builds the stage for the main window.
+     *
+     * @param people The list of people which is used for the table view.
+     * @return The stage of the main window.
+     */
     public Scene buildMainWindow(ObservableList<Person> people) {
+        // Get the ready grid pane
+        GridPane gridPane = this.prepareGridPane();
 
-        GridPane gridPane = new GridPane();
+        // Set constraints for the columns
+        ColumnConstraints firstColumnConstraint = new ColumnConstraints();
+        firstColumnConstraint.setPercentWidth(100);
+        gridPane.getColumnConstraints().add(0, firstColumnConstraint);
 
-        gridPane.setAlignment(Pos.TOP_CENTER);
-        gridPane.setHgap(20);
-        gridPane.setVgap(10);
-        gridPane.setPadding(new Insets(10));
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setPercentWidth(100);
-        gridPane.getColumnConstraints().add(column1);
+        // Build the table view
+        gridPane.add(this.buildTableView(people), 0, 0);
 
-
-        TableView<Person> personTableView = new TableView<Person>(people);
-
-        TableColumn<Person,String> firstNameCol = new TableColumn<Person,String>("Name");
-        firstNameCol.setCellValueFactory(new PropertyValueFactory("name"));
-
-        TableColumn<Person,String> lastNameCol = new TableColumn<Person,String>("First name");
-        lastNameCol.setCellValueFactory(new PropertyValueFactory("firstName"));
-
-        TableColumn<Person,String> dateOfBirthColumn = new TableColumn<Person,String>("Date of birth");
-        dateOfBirthColumn.setCellValueFactory(new PropertyValueFactory("dateOfBirth"));
-
-        TableColumn<Person,String> maritalStatusColumn = new TableColumn<Person,String>("Marital status");
-        maritalStatusColumn.setCellValueFactory(new PropertyValueFactory("maritalStatus"));
-
-
-        personTableView.getColumns().setAll(firstNameCol, lastNameCol, dateOfBirthColumn, maritalStatusColumn);
-
-        gridPane.add(personTableView, 0, 0);
-
+        // Set the alignment of the button and add it to the grid pane
         Button addButton = new Button("Add person...");
+        GridPane.setHalignment(addButton, HPos.RIGHT);
+        gridPane.add(addButton, 0, 1);
+
+        // Handles the event when the add person button is clicked. It opens a new window
+        // with a form to enter a new person.
         addButton.setOnAction(action -> {
-            System.out.println("Add person");
             Stage addPersonStage = new Stage();
-            addPersonStage.setScene(this.buildAddWindow(addPersonStage, people));
+            addPersonStage.setScene(this.buildAddPersonWindow(addPersonStage, people));
             addPersonStage.initModality(Modality.APPLICATION_MODAL);
             addPersonStage.showAndWait();
         });
 
-        gridPane.setHalignment(addButton, HPos.RIGHT);
-        gridPane.add(addButton, 0, 1);
-
-
-        return new Scene(gridPane, 600, 600);
+        return new Scene(gridPane);
     }
 
-    private Scene buildAddWindow(Stage stage, ObservableList<Person> people) {
+    /**
+     * Prepares the grid pane for the different views.
+     *
+     * @return The prepared grid pane
+     */
+    private GridPane prepareGridPane() {
         GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(20);
-        gridPane.setVgap(10);
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(PADDING);
+        gridPane.setVgap(PADDING);
+        gridPane.setPadding(new Insets(PADDING));
+        return gridPane;
+    }
+
+    /**
+     * Builds the table view for the people list.
+     *
+     * @param people The list of people
+     * @return The built table view
+     */
+    private TableView<Person> buildTableView(ObservableList<Person> people) {
+        TableView<Person> personTableView = new TableView<>(people);
+
+        // Prepare the columns of the table view
+        TableColumn<Person, String> firstNameColumn = new TableColumn<>("Name");
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Person, String> lastNameColumn = new TableColumn<>("First name");
+        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+
+        TableColumn<Person, String> dateOfBirthColumn = new TableColumn<>("Date of birth");
+        dateOfBirthColumn.setCellValueFactory(new PropertyValueFactory<>("dateOfBirth"));
+
+        TableColumn<Person, String> maritalStatusColumn = new TableColumn<>("Marital status");
+        maritalStatusColumn.setCellValueFactory(new PropertyValueFactory<>("maritalStatus"));
+
+        // Add the columns to the table view and set constraints
+        personTableView.getColumns().addAll(Arrays.asList(firstNameColumn, lastNameColumn, dateOfBirthColumn, maritalStatusColumn));
+        personTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        return personTableView;
+    }
+
+    private Scene buildAddPersonWindow(Stage stage, ObservableList<Person> people) {
+        GridPane gridPane = this.prepareGridPane();
 
         // Add labels
         List<Node> labels = new ArrayList<>();
@@ -83,7 +115,7 @@ public class SceneBuilder {
         labels.add(new Label("Date of birth"));
         labels.add(new Label("Marital status"));
 
-        for(int i = 0; i < labels.size(); i++) {
+        for (int i = 0; i < labels.size(); i++) {
             gridPane.add(labels.get(i), 0, i);
         }
 
@@ -107,17 +139,17 @@ public class SceneBuilder {
         Button saveButton = new Button("Save");
         saveButton.setOnAction(action -> {
             // Validating
-            if(nameField.getText().isEmpty()) {
+            if (nameField.getText().isEmpty()) {
                 this.showValidationAlert("The name field is empty!");
                 return;
             }
 
-            if(firstNameField.getText().isEmpty()) {
+            if (firstNameField.getText().isEmpty()) {
                 this.showValidationAlert("The first name field is empty!");
                 return;
             }
 
-            if(dateOfBirthField.getValue().isAfter(LocalDate.now())) {
+            if (dateOfBirthField.getValue().isAfter(LocalDate.now())) {
                 this.showValidationAlert("Date of birth is in the future!");
                 return;
             }
@@ -140,7 +172,7 @@ public class SceneBuilder {
 
         BorderPane rootPane = new BorderPane();
         rootPane.setCenter(gridPane);
-        return new Scene(rootPane, 400, 300);
+        return new Scene(rootPane, 350, 200);
     }
 
     private void showValidationAlert(String description) {
