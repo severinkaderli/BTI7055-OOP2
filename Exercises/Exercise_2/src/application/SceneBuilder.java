@@ -12,11 +12,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Person;
 import model.MaritalStatus;
+import persistence.PersonDAO;
+import persistence.serialized.SerializedPersonDAO;
+import persistence.textfile.TextFilePersonDAO;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -25,6 +31,15 @@ public class SceneBuilder {
      * The padding value used throughout the application.
      */
     private static final int PADDING = 10;
+
+    /**
+     * The primary stage of the application.
+     */
+    Stage primaryStage;
+
+    SceneBuilder(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
 
     /**
      * Builds the stage for the main window.
@@ -45,9 +60,29 @@ public class SceneBuilder {
         gridPane.add(this.buildTableView(people), 0, 0);
 
         // Set the alignment of the button and add it to the grid pane
+        Button loadButton = new Button("Load");
+        Button saveButton = new Button("Save");
         Button addButton = new Button("Add person...");
-        GridPane.setHalignment(addButton, HPos.RIGHT);
-        gridPane.add(addButton, 0, 1);
+
+        HBox buttonBox = new HBox(loadButton, saveButton, addButton);
+        buttonBox.setSpacing(PADDING);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        GridPane.setHalignment(buttonBox, HPos.RIGHT);
+        gridPane.add(buttonBox, 0, 1);
+
+        loadButton.setOnAction(event -> {
+            FileChooser fileChooser = this.prepareFileChooser();
+            File file = fileChooser.showOpenDialog(this.primaryStage);
+            PersonDAO dao = new TextFilePersonDAO(Paths.get(file.toURI()));
+            people.setAll(dao.load());
+        });
+
+        saveButton.setOnAction(event -> {
+            FileChooser fileChooser = this.prepareFileChooser();
+            File file = fileChooser.showSaveDialog(this.primaryStage);
+            PersonDAO dao = new TextFilePersonDAO(Paths.get(file.toURI()));
+            dao.save(people);
+        });
 
         // Handles the event when the add person button is clicked. It opens a new window
         // with a form to enter a new person.
@@ -59,6 +94,12 @@ public class SceneBuilder {
         });
 
         return new Scene(gridPane);
+    }
+
+    private FileChooser prepareFileChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("TXT", "*.txt"));
+        return fileChooser;
     }
 
     /**

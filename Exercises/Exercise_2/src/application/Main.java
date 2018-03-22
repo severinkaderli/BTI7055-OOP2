@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import model.Person;
 import persistence.PersonDAO;
+import persistence.serialized.SerializedPersonDAO;
 import persistence.textfile.TextFilePersonDAO;
 
 import java.nio.file.Paths;
@@ -17,13 +18,8 @@ public class Main extends Application {
      */
     ObservableList<Person> people;
 
-    /**
-     * This is the data access object for the people list.
-     */
-    PersonDAO dataAccessObject;
-
     public Main() {
-        this.dataAccessObject = new TextFilePersonDAO(Paths.get("people.txt"));
+        //this.dataAccessObject = new TextFilePersonDAO(Paths.get("people.txt"));
         this.people = FXCollections.observableArrayList();
     }
 
@@ -47,18 +43,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.setupStage(primaryStage);
-        SceneBuilder sceneBuilder = new SceneBuilder();
+        SceneBuilder sceneBuilder = new SceneBuilder(primaryStage);
         primaryStage.setScene(sceneBuilder.buildMainWindow(this.people));
         primaryStage.show();
-    }
-
-    @Override
-    public void init() {
-        this.people = FXCollections.observableArrayList(dataAccessObject.load());
-    }
-
-    @Override
-    public void stop() {
-        this.dataAccessObject.save(this.people);
     }
 }

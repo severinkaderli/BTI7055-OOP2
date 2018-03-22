@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Person {
+public class Person implements Serializable {
     /**
      * The last name of the person.
      */
@@ -38,6 +39,11 @@ public class Person {
         this.maritalStatus = maritalStatus;
     }
 
+    /**
+     * Creates a new person object from a comma separated string of values.
+     *
+     * @param personLine The string of values
+     */
     public Person(String personLine) {
         String[] values = personLine.split(",?\\s");
         this.name = values[0];
