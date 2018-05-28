@@ -11,7 +11,7 @@
 }
 
 #toggleButton {
--fx-padding: 10 20;
+    -fx-padding: 10 20;
     -fx-background-color: linear-gradient(white, orange, red);
 }
 
