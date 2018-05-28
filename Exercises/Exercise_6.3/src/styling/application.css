@@ -1,0 +1,24 @@
+#gridPane {
+    -fx-background-image: url("background.jpg");
+    -fx-background-size: cover;
+}
+
+#mainLabel {
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-text-fill: linear-gradient(white, orange, red);
+}
+
+#toggleButton {
+-fx-padding: 10 20;
+    -fx-background-color: linear-gradient(white, orange, red);
+}
+
+#toggleButton:hover {
+    -fx-background-color: linear-gradient(white, orange, red, yellow);
+}
+
+#toggleButton:pressed {
+    -fx-background-color: linear-gradient(white, orange, red, yellow, gold);
+}
